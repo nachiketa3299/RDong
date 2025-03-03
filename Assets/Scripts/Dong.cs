@@ -13,21 +13,19 @@ namespace RDong
 		void Awake()
 		{
 			_rb = GetComponent<Rigidbody2D>();
-			_rb.constraints = 
-				RigidbodyConstraints2D.FreezePositionX | 
-				RigidbodyConstraints2D.FreezeRotation;
 		}
 
-		void ShouldEndLifecycle()
-		{
+        void OnCollisionEnter2D(Collision2D collision)
+        {
 			DongGenerator.Instance.Pool.Release(this);
-		}
+        }
 
 		/// <summary>
 		/// 풀에서 나온 직후 실행되어야 하는 로직
 		/// </summary>
-		public void InitializeLifecycle() 
+		public void InitializeLifecycle(Vector3 position) 
         { 
+			_rb.MovePosition(position);
         }
 
 		/// <summary>
@@ -35,6 +33,7 @@ namespace RDong
 		/// </summary>
 		public void DeinitializeLifecycle()
 		{
+			_rb.linearVelocity = Vector3.zero;
 		}
 	}
 }

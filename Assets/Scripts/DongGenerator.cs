@@ -1,3 +1,5 @@
+using System.Collections;
+
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -15,10 +17,10 @@ namespace RDong
         [Header("Generator Settings")]
 
         static DongGenerator _instance;
-        IObjectPool<Dong> _pool;
+        ObjectPool<Dong> _pool;
 
         public static DongGenerator Instance => _instance;
-        public IObjectPool<Dong> Pool => _pool;
+        public ObjectPool<Dong> Pool => _pool;
 
         void InitializePool()
         {
@@ -41,14 +43,12 @@ namespace RDong
 
         static void OnReturnToPool(Dong dong) 
         {
-            dong.DeinitializeLifecycle();
             dong.gameObject.SetActive(false);
         }
 
         static void OnTakeFromPool(Dong dong) 
         {
             dong.gameObject.SetActive(true);
-            dong.InitializeLifecycle();
         }
 
         static void OnDestroyPoolObject(Dong dong) 
@@ -56,10 +56,50 @@ namespace RDong
             Destroy(dong);
         }
 
+        Vector3 _spos;
+        Vector3 _epos;
+
+        float rx_s, rx_e;
+        float ry;
+
         void Awake()
         {
             _instance = this;
             InitializePool();
+
+        }
+
+        void Start()
+        {
+            rx_s = Camera.main.ScreenToWorldPoint(new Vector3(0.0f, Screen.height)).x;
+            rx_e = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height)).x;
+            ry = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height)).y;
+            ry += _dongPrefab.GetComponent<Collider2D>().bounds.size.y;
+
+            StartCoroutine(GenerationRoutine());
+        }
+
+        int max_num = 10;
+
+        IEnumerator GenerationRoutine()
+        {
+            while (true)
+            {
+                if (Pool.CountActive >= max_num)
+                {
+                    Debug.Log("Max Dong Limit Reached");
+                }
+                else
+                {
+                    Dong d = Pool.Get();
+
+                    float r = Random.Range(rx_s, rx_e);
+
+                    //d.InitializeLifecycle();
+                }
+
+                yield return new WaitForSeconds(0.2f);
+            }
         }
     }
 }
