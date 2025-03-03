@@ -14,6 +14,8 @@ namespace RDong
         [SerializeField] int _maxPoolItem = 50;
         [SerializeField] Dong _dongPrefab;
 
+        static int counter = 0;
+
         [Header("Generator Settings")]
 
         static DongGenerator _instance;
@@ -38,12 +40,15 @@ namespace RDong
         Dong CreatePooledItem() 
         {
             Dong newDong = Instantiate(_dongPrefab);
+            newDong.name += $"{counter}";
+            ++counter;
             return newDong;
         }
 
         static void OnReturnToPool(Dong dong) 
         {
             dong.gameObject.SetActive(false);
+            dong.Deinitialize();
         }
 
         static void OnTakeFromPool(Dong dong) 
@@ -59,8 +64,8 @@ namespace RDong
         Vector3 _spos;
         Vector3 _epos;
 
-        float rx_s, rx_e;
-        float ry;
+        float _rx_s, _rx_e;
+        float _ry;
 
         void Awake()
         {
@@ -71,10 +76,13 @@ namespace RDong
 
         void Start()
         {
-            rx_s = Camera.main.ScreenToWorldPoint(new Vector3(0.0f, Screen.height)).x;
-            rx_e = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height)).x;
-            ry = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height)).y;
-            ry += _dongPrefab.GetComponent<Collider2D>().bounds.size.y;
+            Vector3 screenBottomLeft = Camera.main.ScreenToWorldPoint(new Vector3(0.0f, 0.0f, 0.0f));
+            Vector3 screenTopRight = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0.0f));
+
+            _rx_s = screenBottomLeft.x;
+            _rx_e = screenTopRight.x;
+            _ry = screenTopRight.y;
+            _ry += _dongPrefab.GetComponent<Collider2D>().bounds.size.y;
 
             StartCoroutine(GenerationRoutine());
         }
@@ -93,12 +101,14 @@ namespace RDong
                 {
                     Dong d = Pool.Get();
 
-                    float r = Random.Range(rx_s, rx_e);
+                    float rx = Random.Range(_rx_s, _rx_e);
+                    Debug.Log($"rx: {rx}");
+                    Vector3 rpos = new(rx, _ry, 0);
 
-                    //d.InitializeLifecycle();
+                    d.Initialize(rpos);
                 }
 
-                yield return new WaitForSeconds(0.2f);
+                yield return new WaitForSeconds(0.4f);
             }
         }
     }

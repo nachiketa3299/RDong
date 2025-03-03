@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 519420030}
   - component: {fileID: 519420033}
   m_Layer: 0
-  m_Name: Main Camera
+  m_Name: PCam
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -226,7 +226,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 12.5
+  orthographic size: 14.375
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -270,11 +270,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_ComponentVersion: 1
-  m_AssetsPPU: 32
-  m_RefResolutionX: 320
-  m_RefResolutionY: 180
-  m_CropFrame: 0
-  m_GridSnapping: 0
+  m_AssetsPPU: 24
+  m_RefResolutionX: 368
+  m_RefResolutionY: 690
+  m_CropFrame: 2
+  m_GridSnapping: 1
   m_FilterMode: 0
   m_UpscaleRT: 0
   m_PixelSnapping: 0
@@ -493,7 +493,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3284851003443037718, guid: 44d6cbe4971448e4593ea33fe0646b4d, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -11
+      value: -12
       objectReference: {fileID: 0}
     - target: {fileID: 3284851003443037718, guid: 44d6cbe4971448e4593ea33fe0646b4d, type: 3}
       propertyPath: m_LocalPosition.z
@@ -531,8 +531,7 @@ PrefabInstance:
       propertyPath: m_Name
       value: DongCharacter
       objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 2580692589062699908, guid: 44d6cbe4971448e4593ea33fe0646b4d, type: 3}
+    m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

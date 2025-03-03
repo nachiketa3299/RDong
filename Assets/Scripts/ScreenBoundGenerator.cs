@@ -24,11 +24,16 @@ namespace RDong
             CreateBound(Dir.R, new Vector2(_bndMax.x + _thickness * 0.5f, (_bndMin.y + _bndMax.y) * 0.5f),
                         new Vector2(_thickness, _bndMax.y - _bndMin.y + _thickness * 2));
 
-            CreateBound(Dir.T, new Vector2((_bndMin.x + _bndMax.x) * 0.5f, _bndMax.y + _thickness * 0.5f),
-                        new Vector2(_bndMax.x - _bndMin.x + _thickness * 2, _thickness));
+
+            //CreateBound(Dir.T, new Vector2((_bndMin.x + _bndMax.x) * 0.5f, _bndMax.y + _thickness * 0.5f),
+            //            new Vector2(_bndMax.x - _bndMin.x + _thickness * 2, _thickness));
 
             CreateBound(Dir.B, new Vector2((_bndMin.x + _bndMax.x) * 0.5f, _bndMin.y - _thickness * 0.5f),
                         new Vector2(_bndMax.x - _bndMin.x + _thickness * 2, _thickness));
+
+            _bcs[(uint)Dir.L].gameObject.layer = LayerMask.NameToLayer("Wall");
+            _bcs[(uint)Dir.R].gameObject.layer = LayerMask.NameToLayer("Wall");
+            _bcs[(uint)Dir.B].gameObject.layer = LayerMask.NameToLayer("DDongKill");
         }
 
         void CreateBound(Dir dir, Vector2 position, Vector2 size)

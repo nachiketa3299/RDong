@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5116532523286272364}
   - component: {fileID: 774587557591901088}
   - component: {fileID: 2032163484633244973}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Character
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -96,7 +96,7 @@ CapsuleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.1}
   m_Size: {x: 0.7, y: 1.8}
   m_Direction: 0
 --- !u!212 &774587557591901088
@@ -143,12 +143,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -4487668617787290405, guid: ca5d82f95f6d98c46842cb45ef82723e, type: 3}
+  m_Sprite: {fileID: 2109952961421727610, guid: 670d5ab45e1480242964928bc937707b, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.16, y: 0.16}
+  m_Size: {x: 0.6666667, y: 1.6666666}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
