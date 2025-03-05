@@ -96,6 +96,34 @@ namespace RDong
                     ""isPartOfComposite"": true
                 }
             ]
+        },
+        {
+            ""name"": ""UserInterface"",
+            ""id"": ""80c1c78c-5d1f-4bac-80f2-dc625f240901"",
+            ""actions"": [
+                {
+                    ""name"": ""AnyStart"",
+                    ""type"": ""Button"",
+                    ""id"": ""7c75bc6a-f236-4b62-b66d-c564b8718dbb"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                }
+            ],
+            ""bindings"": [
+                {
+                    ""name"": """",
+                    ""id"": ""929c0fb2-b521-4177-94cf-67fb6b247181"",
+                    ""path"": ""<Keyboard>/anyKey"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""AnyStart"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                }
+            ]
         }
     ],
     ""controlSchemes"": [
@@ -164,11 +192,15 @@ namespace RDong
             // Gameplay
             m_Gameplay = asset.FindActionMap("Gameplay", throwIfNotFound: true);
             m_Gameplay_Move = m_Gameplay.FindAction("Move", throwIfNotFound: true);
+            // UserInterface
+            m_UserInterface = asset.FindActionMap("UserInterface", throwIfNotFound: true);
+            m_UserInterface_AnyStart = m_UserInterface.FindAction("AnyStart", throwIfNotFound: true);
         }
 
         ~@IA_GameInputs()
         {
             UnityEngine.Debug.Assert(!m_Gameplay.enabled, "This will cause a leak and performance issues, IA_GameInputs.Gameplay.Disable() has not been called.");
+            UnityEngine.Debug.Assert(!m_UserInterface.enabled, "This will cause a leak and performance issues, IA_GameInputs.UserInterface.Disable() has not been called.");
         }
 
         public void Dispose()
@@ -272,6 +304,52 @@ namespace RDong
             }
         }
         public GameplayActions @Gameplay => new GameplayActions(this);
+
+        // UserInterface
+        private readonly InputActionMap m_UserInterface;
+        private List<IUserInterfaceActions> m_UserInterfaceActionsCallbackInterfaces = new List<IUserInterfaceActions>();
+        private readonly InputAction m_UserInterface_AnyStart;
+        public struct UserInterfaceActions
+        {
+            private @IA_GameInputs m_Wrapper;
+            public UserInterfaceActions(@IA_GameInputs wrapper) { m_Wrapper = wrapper; }
+            public InputAction @AnyStart => m_Wrapper.m_UserInterface_AnyStart;
+            public InputActionMap Get() { return m_Wrapper.m_UserInterface; }
+            public void Enable() { Get().Enable(); }
+            public void Disable() { Get().Disable(); }
+            public bool enabled => Get().enabled;
+            public static implicit operator InputActionMap(UserInterfaceActions set) { return set.Get(); }
+            public void AddCallbacks(IUserInterfaceActions instance)
+            {
+                if (instance == null || m_Wrapper.m_UserInterfaceActionsCallbackInterfaces.Contains(instance)) return;
+                m_Wrapper.m_UserInterfaceActionsCallbackInterfaces.Add(instance);
+                @AnyStart.started += instance.OnAnyStart;
+                @AnyStart.performed += instance.OnAnyStart;
+                @AnyStart.canceled += instance.OnAnyStart;
+            }
+
+            private void UnregisterCallbacks(IUserInterfaceActions instance)
+            {
+                @AnyStart.started -= instance.OnAnyStart;
+                @AnyStart.performed -= instance.OnAnyStart;
+                @AnyStart.canceled -= instance.OnAnyStart;
+            }
+
+            public void RemoveCallbacks(IUserInterfaceActions instance)
+            {
+                if (m_Wrapper.m_UserInterfaceActionsCallbackInterfaces.Remove(instance))
+                    UnregisterCallbacks(instance);
+            }
+
+            public void SetCallbacks(IUserInterfaceActions instance)
+            {
+                foreach (var item in m_Wrapper.m_UserInterfaceActionsCallbackInterfaces)
+                    UnregisterCallbacks(item);
+                m_Wrapper.m_UserInterfaceActionsCallbackInterfaces.Clear();
+                AddCallbacks(instance);
+            }
+        }
+        public UserInterfaceActions @UserInterface => new UserInterfaceActions(this);
         private int m_KeyboardMouseSchemeIndex = -1;
         public InputControlScheme KeyboardMouseScheme
         {
@@ -320,6 +398,10 @@ namespace RDong
         public interface IGameplayActions
         {
             void OnMove(InputAction.CallbackContext context);
+        }
+        public interface IUserInterfaceActions
+        {
+            void OnAnyStart(InputAction.CallbackContext context);
         }
     }
 }

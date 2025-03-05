@@ -1,6 +1,7 @@
+using System;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
-
 
 namespace RDong
 {
@@ -10,41 +11,35 @@ namespace RDong
 	[RequireComponent(typeof(CapsuleCollider2D))]
 	public class DongCharacter : MonoBehaviour, IGameplayActions
 	{
-		[SerializeField] float _mass = 1.0f;
+		public Action OnCharacterDied;
+
+		[Header("Movement Settings")]
+
 		[SerializeField] float _accMag = 3.0f;
-		[SerializeField] float _linearDamping = 1.0f;
 		[SerializeField] float _maxSpeed = 2.0f;
 
-		Vector2 _moveInput = Vector2.zero;
+		[Header("Health Settings")]
 
-		IA_GameInputs _gi;
+		[SerializeField] int _maxHealth = 2;
+
+		Vector2 _moveInput = Vector2.zero;
+		int _curHealth;
+
 		Rigidbody2D _rb;
 
 		void Awake()
 		{
-			// 입력 초기화
-			_gi = new IA_GameInputs();
-			_gi.Gameplay.SetCallbacks(this);
-
-			_gi.Enable();
-
 			// 컴포넌트 초기화
 			_rb = GetComponent<Rigidbody2D>();
-			_rb.constraints =
-				RigidbodyConstraints2D.FreezePositionY |
-				RigidbodyConstraints2D.FreezeRotation;
-			_rb.mass = _mass;
-			_rb.linearDamping = _linearDamping;
 		}
 
-		void OnValidate()
-		{
-			if (_rb)
-			{
-                _rb.mass = _mass;
-                _rb.linearDamping = _linearDamping;
-			}
-		}
+		/// <summary>
+		/// 게임 시작시 플레이어의 상태 정리
+		/// </summary>
+		public void Initialize() 
+        { 
+			_curHealth = _maxHealth;
+        }
 
 		void FixedUpdate()
 		{
@@ -60,7 +55,20 @@ namespace RDong
 			_rb.linearVelocity = _maxSpeed * _rb.linearVelocity.normalized;
 		}
 
-		void IGameplayActions.OnMove(InputAction.CallbackContext context)
+        private void OnTriggerEnter2D(Collider2D collision)
+        {
+			if (_curHealth > 0)
+			{
+				--_curHealth;
+			} 
+			else
+			{
+				OnCharacterDied?.Invoke();
+				Debug.Log("캐릭터가 죽었습니다.");
+			}
+        }
+
+        void IGameplayActions.OnMove(InputAction.CallbackContext context)
 		{
 			Vector2 rawInput = context.ReadValue<Vector2>();
 

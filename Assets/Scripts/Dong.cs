@@ -10,7 +10,6 @@ namespace RDong
 	{
 		Rigidbody2D _rb;
 
-
         void Awake()
 		{
 			_rb = GetComponent<Rigidbody2D>();
@@ -18,8 +17,6 @@ namespace RDong
 
         private void OnTriggerEnter2D(Collider2D other)
         {
-			Debug.Log($"{name}°ú Ãæµ¹: {other.name}");
-
 			DongGenerator.Instance.Pool.Release(this);
         }
 
@@ -35,8 +32,7 @@ namespace RDong
 			_rb.position = Vector2.zero;
 			_rb.rotation = 0;
 
-			transform.position = Vector3.zero;
-			transform.rotation = Quaternion.identity;
+			transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
 			transform.localScale = Vector3.one;
 		}
 	}

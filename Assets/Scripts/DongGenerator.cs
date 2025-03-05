@@ -10,16 +10,23 @@ namespace RDong
     {
         [Header("Pool Settings")]
 
-        [SerializeField] bool _collectionChecks;
-        [SerializeField] int _maxPoolItem = 50;
+        [SerializeField] bool _collectionChecks = true;
+        [SerializeField] int _maxPoolItem = 20;
         [SerializeField] Dong _dongPrefab;
 
         static int counter = 0;
 
         [Header("Generator Settings")]
 
+        [SerializeField] int max_num = 10;
+
         static DongGenerator _instance;
         ObjectPool<Dong> _pool;
+
+        Vector3 _spos, _epos; // 화면 상단 왼~오
+
+        float _rx_s, _rx_e;
+        float _ry;
 
         public static DongGenerator Instance => _instance;
         public ObjectPool<Dong> Pool => _pool;
@@ -40,7 +47,11 @@ namespace RDong
         Dong CreatePooledItem() 
         {
             Dong newDong = Instantiate(_dongPrefab);
+
+#if UNITY_EDITOR
             newDong.name += $"{counter}";
+#endif
+
             ++counter;
             return newDong;
         }
@@ -61,21 +72,11 @@ namespace RDong
             Destroy(dong);
         }
 
-        Vector3 _spos;
-        Vector3 _epos;
-
-        float _rx_s, _rx_e;
-        float _ry;
-
         void Awake()
         {
             _instance = this;
             InitializePool();
 
-        }
-
-        void Start()
-        {
             Vector3 screenBottomLeft = Camera.main.ScreenToWorldPoint(new Vector3(0.0f, 0.0f, 0.0f));
             Vector3 screenTopRight = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0.0f));
 
@@ -83,11 +84,16 @@ namespace RDong
             _rx_e = screenTopRight.x;
             _ry = screenTopRight.y;
             _ry += _dongPrefab.GetComponent<Collider2D>().bounds.size.y;
-
-            StartCoroutine(GenerationRoutine());
         }
 
-        int max_num = 10;
+        public void GenerationStart()
+        {
+            StartCoroutine(GenerationRoutine());
+        }
+        public void GenerationEnd()
+        {
+            StopAllCoroutines();
+        }
 
         IEnumerator GenerationRoutine()
         {
@@ -95,14 +101,13 @@ namespace RDong
             {
                 if (Pool.CountActive >= max_num)
                 {
-                    Debug.Log("Max Dong Limit Reached");
                 }
                 else
                 {
                     Dong d = Pool.Get();
 
+                    // TODO: 생성 로직 퀄업
                     float rx = Random.Range(_rx_s, _rx_e);
-                    Debug.Log($"rx: {rx}");
                     Vector3 rpos = new(rx, _ry, 0);
 
                     d.Initialize(rpos);
