@@ -67,6 +67,8 @@ namespace RDong
                 context._character.gameObject.SetActive(true);
 
                 context._generator.GenerationStart();
+
+                ScoreManager.Instance.StartCountScore();
             }
         }
 
@@ -84,6 +86,8 @@ namespace RDong
                 context._character.gameObject.SetActive(false);
 
                 context._generator.GenerationEnd();
+
+                ScoreManager.Instance.FinishCountScore();
             }
         }
 
